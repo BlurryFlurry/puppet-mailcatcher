@@ -31,9 +31,6 @@ class mailcatcher::params {
     'Redhat': {
       # rubygem-mime-types from gem requires ruby >= 1.9.2 which is not available on CentOS6, in CentOS7 the gem installed mime-types causes "Encoding::CompatibilityError", so use the package from EPEL which just works fine for CentOS 6 and 7.
       $std_packages = ['sqlite-devel', 'gcc-c++', 'rubygem-mime-types']
-      $config_file  = '/etc/init.d/mailcatcher'
-      $template     = 'mailcatcher/etc/init/mailcatcher.sysv.erb'
-      $provider     = 'redhat'
 
       # We need to distinguish between major RHEL release versions
       case $::operatingsystemmajrelease {
@@ -43,8 +40,14 @@ class mailcatcher::params {
           # multi_json from gem causes a crash when receiving a mail: /usr/local/share/ruby/site_ruby/rubygems/core_ext/kernel_require.rb:54:in `require': Did not recognize your adapter specification (cannot load such file -- json/ext/parser). (MultiJson::AdapterError)
           $packages = union($std_packages, ['rubygem-json_pure', 'rubygem-multi_json'])
           $version  = $default_version
+          $config_file  = '/etc/systemd/system/mailcatcher.service'
+          $provider     = 'systemd'
+          $template     = 'mailcatcher/etc/systemd/system/mailcatcher.service.erb'
         }
         6: {
+          $config_file      = '/etc/init.d/mailcatcher'
+          $template         = 'mailcatcher/etc/init/mailcatcher.sysv.erb'
+          $provider         = 'redhat'
           $mailcatcher_path = '/usr/bin'
           $packages = $std_packages
           # newer mailcatcher versions require gems which require i18n gem which is not compatible with CentOS6's ruby version 1.8.7

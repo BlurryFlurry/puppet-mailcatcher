@@ -1,0 +1,8 @@
+[Unit]
+Description=Mailcatcher is a captive smtp server with a web interface which allows you to view "sent" emails.
+
+[Service]
+ExecStart=<%= @mailcatcher_path %>/mailcatcher -f -v --smtp-ip <%= @smtp_ip %> --smtp-port <%= @smtp_port %> --http-ip <%= @http_ip %> --http-port <%= @http_port %>
+
+[Install]
+WantedBy=multi-user.target
